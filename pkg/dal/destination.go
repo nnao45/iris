@@ -42,6 +42,8 @@ func (d *Destination) Exec(payload interface{}) {
 		execDefault(d, payload)
 	} else if d.Type == "Codefresh" {
 		execCodefresh(d, payload)
+	} else if d.Type == "Slack" {
+		execSlack(d, payload)
 	}
 }
 
@@ -89,6 +91,10 @@ func execCodefresh(d *Destination, payload interface{}) {
 	} else {
 		fmt.Printf("Error:\nStatus Code: %d\nBody: %s\n", resp.StatusCode, string(body))
 	}
+}
+
+func execSlack(d *Destination, payload interface{}) {
+
 }
 
 type codefreshPostRequestBody struct {

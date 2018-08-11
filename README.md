@@ -154,6 +154,18 @@ Add destinations with Codefresh type:
     branch: master
 ```
 
+### Slack
+Since IRIS is not a Slack application, to send messages to your slack generate [legacy token](https://api.slack.com/custom-integrations/legacy-tokens)
+```yaml
+  - name: SendSlackMessage
+    type: Slack
+    channel: SLACK_CHANNEL
+    token: LEGACY_TOKEN
+    payload:
+    - name: message
+      value: Got event about {{$.metadata.name}}
+```
+
 ## Integrations
 Connecting between filters and destinations
 ```yaml
