@@ -160,11 +160,10 @@ Since IRIS is not a Slack application, to send messages to your slack generate [
 ```yaml
   - name: SendSlackMessage
     type: Slack
-    channel: SLACK_CHANNEL
     token: LEGACY_TOKEN
     payload:
     - name: message
-      value: Got event about {{$.metadata.name}}
+      value: Got event about {{ .NAME }}
 ```
 
 ## Integrations
@@ -177,3 +176,6 @@ integrations:
     filters:
     - {{name of filters to apply}}
 ```
+
+## Variables
+Variables is a way to populate data from Kubernetes event

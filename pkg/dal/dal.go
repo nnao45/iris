@@ -12,6 +12,7 @@ type Dal struct {
 	Destinations []Destination
 	Integrations []Integration
 	Filters      []Filter
+	Variables    []Variable
 }
 
 func GetDal() *Dal {

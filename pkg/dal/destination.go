@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,13 +16,18 @@ import (
 )
 
 type Destination struct {
-	Name     string `yaml:"name"`
-	URL      string `yaml:"url"`
-	Secret   string `yaml:"secret"`
-	Type     string `yaml:"type"`
-	Branch   string `yaml:"branch"`
-	Pipeline string `yaml:"pipeline"`
-	CFToken  string `yaml:"cftoken"`
+	Name         string `yaml:"name"`
+	URL          string `yaml:"url"`
+	Secret       string `yaml:"secret"`
+	Type         string `yaml:"type"`
+	Branch       string `yaml:"branch"`
+	Pipeline     string `yaml:"pipeline"`
+	CFToken      string `yaml:"cftoken"`
+	SlackToken   string `yaml:"token"`
+	SlackPayload []struct {
+		Key   string `yaml:"key"`
+		Value string `yaml:"value"`
+	} `yaml:"payload"`
 }
 
 func getHmac(secret string, payload []byte) string {
@@ -94,7 +100,45 @@ func execCodefresh(d *Destination, payload interface{}) {
 }
 
 func execSlack(d *Destination, payload interface{}) {
+	baseURL := "https://slack.com/api/chat.postMessage"
+	fmt.Printf("Executing SlackWebHook destination to %v\n", d.SlackToken)
+	var slackPayload = make(map[string]interface{})
+	for _, p := range d.SlackPayload {
 
+		var tpl bytes.Buffer
+		t := template.New("")
+		t, _ = t.Parse(string(p.Value))
+		variableSet := Interpolate(GetDal().Variables, payload)
+		if err := t.Execute(&tpl, variableSet); err != nil {
+			slackPayload[p.Key] = p.Value
+		} else {
+			slackPayload[p.Key] = tpl.String()
+		}
+
+	}
+	mJSON, err := json.Marshal(slackPayload)
+	if err != nil {
+		fmt.Println(err)
+	}
+	contentReader := bytes.NewReader(mJSON)
+	req, err := http.NewRequest("POST", baseURL, contentReader)
+	if err != nil {
+		fmt.Println(err)
+	}
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", d.SlackToken))
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode == 200 {
+		fmt.Printf("Execute Slack POST Success.\n")
+	} else {
+		fmt.Printf("Error:\nStatus Code: %d\nBody: %s\n", resp.StatusCode, string(body))
+	}
 }
 
 type codefreshPostRequestBody struct {
