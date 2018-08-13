@@ -178,4 +178,15 @@ integrations:
 ```
 
 ## Variables
-Variables is a way to populate data from Kubernetes event
+* Variables supported only in Slack destination payload atm.
+Variables are used in go template, for example
+```yaml
+variables:
+  - key: ResourceKind
+    jsonpath: $.involvedObject.kind
+  - key: ClusterName
+    value: prod
+```
+`Resource {{ .ResourceKind }} is been created in cluster {{ .ClusterName }}`
+Then when Kubernetes event `involvedObject.kind` evaluated to `pod` the template will be render into:
+`Resource pod is been created in cluster prod`
