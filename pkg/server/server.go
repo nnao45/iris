@@ -1,13 +1,13 @@
 package server
 
 import (
-	"fmt"
+	"github.com/olegsu/iris/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func StartServer() {
-	fmt.Println("Server started")
+	logger.Get().Info("Starting server", nil)
 	r := gin.Default()
 	r.Run()
 }

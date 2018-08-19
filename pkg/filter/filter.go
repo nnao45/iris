@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/olegsu/iris/pkg/kube"
+	"github.com/olegsu/iris/pkg/logger"
 	"github.com/olegsu/iris/pkg/util"
 )
 
@@ -53,6 +54,10 @@ func NewFilter(json map[string]interface{}, k kube.Kube) (Filter, error) {
 }
 
 func ApplyFilter(f Filter, obj interface{}) (bool, error) {
+	logger.Get().Info("Applying filter", logger.JSON{
+		"name": f.GetName(),
+		"type": f.GetType(),
+	})
 	return f.Apply(obj)
 }
 

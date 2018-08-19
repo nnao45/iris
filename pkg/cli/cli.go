@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/olegsu/iris/pkg/app"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -58,6 +59,8 @@ func setupCommands(app *cli.App) {
 }
 
 func run(c *cli.Context) error {
+	log.SetLevel(log.InfoLevel)
+	log.SetFormatter(&log.JSONFormatter{})
 	config := app.NewApplicationOptions(
 		c.String("iris-file"),
 		c.String("kube-config"),

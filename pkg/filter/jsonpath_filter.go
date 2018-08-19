@@ -1,8 +1,9 @@
 package filter
 
 import (
-	"fmt"
 	"regexp"
+
+	"github.com/olegsu/iris/pkg/logger"
 
 	"github.com/yalp/jsonpath"
 )
@@ -43,7 +44,10 @@ func applyRegexpFilter(pattern string, value string) (bool, error) {
 	if match == false {
 		return false, nil
 	}
-	fmt.Printf("JSON path match regex %s == %s\n", pattern, value)
+	logger.Get().Info("JSON path match regex", logger.JSON{
+		"regex":  pattern,
+		"actual": value,
+	})
 	return true, nil
 }
 
@@ -51,6 +55,9 @@ func applyMatchValueFilter(requiredValue string, actualValue string) bool {
 	if actualValue != requiredValue {
 		return false
 	}
-	fmt.Printf("JSON path match %s == %s\n", requiredValue, actualValue)
+	logger.Get().Info("JSON path match", logger.JSON{
+		"required": requiredValue,
+		"actual":   actualValue,
+	})
 	return true
 }

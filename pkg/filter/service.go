@@ -54,12 +54,13 @@ func IsFiltersMatched(service Service, requiredFilters []string, data interface{
 	var err error
 	for _, f := range requiredFilters {
 		var res bool
-		filter, err := service.GetFilterByName(f)
+		f, err := service.GetFilterByName(f)
 		if err != nil {
 			util.EchoError(err)
 			matched = false
 		}
-		res, err = filter.Apply(data)
+
+		res, err = ApplyFilter(f, data)
 		if err != nil {
 			util.EchoError(err)
 			matched = false

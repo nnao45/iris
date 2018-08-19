@@ -6,8 +6,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/olegsu/iris/pkg/logger"
 )
 
 type defaultDestination struct {
@@ -28,7 +29,9 @@ func getHmac(secret string, payload []byte) string {
 }
 
 func (d *defaultDestination) Exec(payload interface{}) {
-	fmt.Printf("Executing default destination to %s\n", d.URL)
+	logger.Get().Info("Executing default destination", logger.JSON{
+		"URL": d.URL,
+	})
 	mJSON, _ := json.Marshal(payload)
 	contentReader := bytes.NewReader(mJSON)
 	req, _ := http.NewRequest("POST", d.URL, contentReader)

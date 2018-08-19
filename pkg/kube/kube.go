@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/olegsu/iris/pkg/logger"
+
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -27,7 +29,7 @@ type kube struct {
 }
 
 func (k *kube) Watch(watchFn WatchFn) {
-	fmt.Printf("Watching\n")
+	logger.Get().Info("Starting to watch on Kubernetes events", nil)
 	watchlist := cache.NewListWatchFromClient(k.Clientset.Core().RESTClient(), "events", metav1.NamespaceAll, fields.Everything())
 	_, controller := cache.NewInformer(
 		watchlist,
@@ -81,10 +83,12 @@ func NewKubeManager(kubeconfig string, incluster bool) Kube {
 	var config *rest.Config
 	var err error
 	if incluster == true {
-		fmt.Printf("Running from in cluster\n")
+		logger.Get().Info("Running from in cluster", nil)
 		config, err = rest.InClusterConfig()
 	} else {
-		fmt.Printf("Connecting to cluster from kubeconfig %s\n", kubeconfig)
+		logger.Get().Info("Connecting to cluster from kubeconfig", logger.JSON{
+			"path": kubeconfig,
+		})
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 	}
 	if err != nil {

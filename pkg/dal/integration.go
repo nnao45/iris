@@ -2,7 +2,8 @@ package dal
 
 import (
 	"encoding/json"
-	"fmt"
+
+	"github.com/olegsu/iris/pkg/logger"
 
 	"github.com/olegsu/iris/pkg/destination"
 	"github.com/olegsu/iris/pkg/filter"
@@ -32,7 +33,9 @@ func (i *Integration) Exec(obj interface{}) (bool, error) {
 		return false, err
 	}
 	if result == true {
-		fmt.Printf("%s pass all checks, executing\n", i.Name)
+		logger.Get().Info("Event pass all filter, running integration", logger.JSON{
+			"name": i.Name,
+		})
 		destination.Exec(GetDal().DestinationService, i.Destinations, obj)
 	}
 	return false, nil

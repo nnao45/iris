@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/olegsu/iris/pkg/dal"
 	"github.com/olegsu/iris/pkg/kube"
+	"github.com/olegsu/iris/pkg/logger"
 	"github.com/olegsu/iris/pkg/reader"
 	"github.com/olegsu/iris/pkg/server"
 )
@@ -26,6 +27,7 @@ func NewApplicationOptions(irisconfig string, kubeconfig string, incluster bool,
 }
 
 func CreateApp(config *ApplicationOptions) {
+	logger.Get().Info("Creating application", nil)
 	k := kube.NewKubeManager(config.KubeconfigPath, config.InCluster)
 	var r reader.IRISProcessor
 	if config.IrisConfigMapName != "" {
