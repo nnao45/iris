@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: iris 
+  namespace: iris 
+  labels:
+    version: v0.0.4 
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - env:
+        - name: IRIS_CONFIGMAP_NAME
+          value: iris 
+        - name: IRIS_IN_CLUSTER
+          value: "true"
+        - name: IRIS_CONFIGMAP_NAMESPACE
+          value: iris
+        name: 
+        command:
+        - "iris"
+        - "run"
+        imagePullPolicy: IfNotPresent
+        image: 
+	  name: olsynt/iris
+	  tag: latest
